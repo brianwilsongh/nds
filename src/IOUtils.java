@@ -3,12 +3,12 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class IOUtils {
 	
-	public static ArrayList<String> getLinks(){
-		ArrayList<String> links = new ArrayList<>();
+	public static LinkedList<String> getLinks(){
+		LinkedList<String> links = new LinkedList<>();
 		try {
 			Files.lines(Paths.get(System.getProperty("user.dir") + "/target.txt")).forEachOrdered(link->links.add(link.toLowerCase()));;
 		} catch (Exception e){

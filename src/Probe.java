@@ -4,13 +4,17 @@ import com.gargoylesoftware.htmlunit.WebClientOptions;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
-public class DomainCrawler {
+public class Probe {
 	public WebClient webClient;
 	public String origin;
+	public static boolean disfunctional = false;
+	public static Spider associatedSpider;
 	
-	public DomainCrawler(String inputOrigin){
-		//an object that begins at origin url, method .extract() return boolean, true if visited page successfully & was within domain
+	public Probe(String inputOrigin, Spider spider){
+		//probe begins at origin url, stores an instance of webClient, 
 		origin = inputOrigin;
+		associatedSpider = spider;
+		
 		try {
 			webClient = new WebClient();
 			WebClientOptions options = webClient.getOptions();
@@ -24,8 +28,12 @@ public class DomainCrawler {
 			options.setGeolocationEnabled(false);
 			options.setTimeout(7000);
 		} catch (Exception e){
-			e.getMessage();
+			disfunctional = true;
+			webClient.close();
+			e.printStackTrace();
 		}
+		
+		extractFrom(origin); //do initial pull
 	}
 	
 	public boolean extractFrom(String url){
