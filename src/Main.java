@@ -3,39 +3,33 @@ import java.util.ArrayList;
 
 public class Main {
 	volatile static LinkedList origins; //links to websites to iterate over
-	static ArrayList<Spider> spiders = new ArrayList<>();
+	static ArrayList<SpiderThread> spiderThreads = new ArrayList<>();
+	
+	static int coreCount; //num of cores availabe
     
 	public static void main(String[] args){
 	    // turn off htmlunit warnings
-		doConfiguration();
+		configure();
 		
-		origins = IOUtils.getLinks();
+		Spider spider = new Spider();
+
+		System.out.println("Reached the end of Main.class");
 		
-		Spider spider = new Spider(origins);
-		spiders.add(spider);
+		//call start on all threads then join to pause until they finish
 		
-		System.out.println(spider.toString());
-		System.out.println(origins);
-		
-		
-		while (!allLinksExhausted()){
-		}
 	}
 	
-	private static boolean allLinksExhausted(){
-		for (Spider thisSpider : spiders){
-			if (thisSpider.exhausted){
-				
-			}
-		}
-		return false;
+	public static synchronized String getOrigin(){
+		String origin = (String) origins.removeFirst();
+		return origin;
 	}
 	
-	private static void doConfiguration(){
+	private static void configure(){
 	    java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(java.util.logging.Level.OFF);
 	    java.util.logging.Logger.getLogger("org.apache.http").setLevel(java.util.logging.Level.OFF);
-	    int coreCount = Runtime.getRuntime().availableProcessors();
+	    coreCount = Runtime.getRuntime().availableProcessors();
 //	    System.out.println(coreCount + " cores available");
+	    origins = IOUtils.getLinks();
 	}
 
 }

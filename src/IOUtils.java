@@ -17,5 +17,9 @@ public class IOUtils {
 		return links;
 	}
 	
+	public static synchronized void writeToOutput(String s){
+		//will be called from multiple threads to write to output file in main
+	}
+	
 
 }
