@@ -50,6 +50,7 @@ public class Probe implements Runnable {
 	public boolean extractFrom(String url){
 		try {
 			String response = webClient.getPage(url).getWebResponse().getContentAsString();
+			System.out.println("response: " + response);
 			if (response.length() > 0){
 				return true;
 			} else {
@@ -68,7 +69,15 @@ public class Probe implements Runnable {
 	@Override
 	public void run() {
 		//this method retrieves resposne of next link, terminate if no more links
+		try {
+			long sleep = (long) (Math.random() * 4000); //simulate network latency
+			Thread.sleep(sleep);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		System.out.println("Thread " + Thread.currentThread().getId() + " probe run: " + origin);
+		
 		mLatch.countDown();
 	}
 

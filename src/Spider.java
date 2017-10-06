@@ -8,7 +8,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
 public class Spider {
-	public static int waitInterval = 2500;
 	
 	public static ArrayList<Probe> probeRevolver;
 	
@@ -23,16 +22,23 @@ public class Spider {
 	}
 	
 	public void initiate(){
-		
-		ExecutorService executor = Executors.newFixedThreadPool(Main.coreCount);
+		ExecutorService executor = null;
 		CountDownLatch latch;
 		
+		int waitInterval = 5000;
+		byte threadsPerCore = 1;
+		int maxThreadLimit = Main.coreCount * threadsPerCore;
+		
 		while (!exhausted){
-			
-			while (probeRevolver.size() < 10 && Main.origins.size() > 0){
+			long startIteration = System.nanoTime();
+			while (probeRevolver.size() < (maxThreadLimit) && Main.origins.size() > 0){
 				probeRevolver.add(new Probe(Main.getOrigin()));
 				System.out.println("Thread:" + Thread.currentThread().getId() + " probes: " + probeRevolver.toString());
 			}
+			if (executor != null){
+				executor.shutdown();
+			}
+			executor = Executors.newFixedThreadPool(probeRevolver.size());
 			
 			latch = new CountDownLatch(probeRevolver.size());
 			for (byte idx = 0; idx < probeRevolver.size(); idx++){
@@ -40,10 +46,9 @@ public class Spider {
 				thisProbe.setLatch(latch);
 				executor.execute(thisProbe);
 				
-//				if (idx == probeRevolver.size() - 1){
-//					probeRevolver.remove(idx);
-//				}
-				
+				if (idx == probeRevolver.size() - 1){
+					probeRevolver.remove(idx);
+				}
 				
 			}
 			
@@ -53,14 +58,22 @@ public class Spider {
 				e1.printStackTrace();
 			}
 			
-			System.out.println("Latch opened! Size of revolver: " + probeRevolver.size());
-			System.out.println("Size of origins LL: " + Main.origins.size());
 			
 			try {
-				Thread.sleep(waitInterval / probeRevolver.size());
+				//ensure that enough time has passed between iterations
+				int timeNeededToMeetBaseline = (int) (waitInterval - (System.nanoTime() - startIteration)/1000000);
+				System.out.println(timeNeededToMeetBaseline);
+				if (timeNeededToMeetBaseline > 0){
+					Thread.sleep(timeNeededToMeetBaseline);
+				}
 			} catch (InterruptedException e){
 				e.printStackTrace();
 			}
+			
+			System.out.println("Latch opened! Size of revolver: " + probeRevolver.size());
+			System.out.println("Size of origins LL: " + Main.origins.size());
+			
+			System.out.println("Time for 1 iteration: "  + (System.nanoTime() - startIteration)/1000000);
 			
 			if (probeRevolver.size() < 1){
 				//probe array empty even after trying to find new origins to build new probes
