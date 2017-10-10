@@ -23,14 +23,18 @@ public class Spider {
 	
 	public void initiate(){
 		ExecutorService executor = null;
-		CountDownLatch latch;
+		CountDownLatch probeLatch;
 		
 		int waitInterval = 5000;
-		byte threadsPerCore = 1;
+		byte threadsPerCore = 3;
 		int maxThreadLimit = Main.coreCount * threadsPerCore;
+		if (maxThreadLimit < 2){
+			maxThreadLimit = 2;
+		}
 		
 		while (!exhausted){
 			long startIteration = System.nanoTime();
+
 			while (probeRevolver.size() < (maxThreadLimit) && Main.origins.size() > 0){
 				probeRevolver.add(new Probe(Main.getOrigin()));
 				System.out.println("Thread:" + Thread.currentThread().getId() + " probes: " + probeRevolver.toString());
@@ -40,10 +44,10 @@ public class Spider {
 			}
 			executor = Executors.newFixedThreadPool(probeRevolver.size());
 			
-			latch = new CountDownLatch(probeRevolver.size());
+			probeLatch = new CountDownLatch(probeRevolver.size());
 			for (byte idx = 0; idx < probeRevolver.size(); idx++){
 				Probe thisProbe = probeRevolver.get(idx);
-				thisProbe.setLatch(latch);
+				thisProbe.setLatch(probeLatch);
 				executor.execute(thisProbe);
 				
 				if (idx == probeRevolver.size() - 1){
@@ -53,7 +57,7 @@ public class Spider {
 			}
 			
 			try {
-				latch.await();
+				probeLatch.await();
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}

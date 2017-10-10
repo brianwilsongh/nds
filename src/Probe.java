@@ -18,12 +18,14 @@ public class Probe implements Runnable {
 	
 	public static ArrayDeque unvisitedLinks; //hash with base urls as keys and collected urls as values
 	public static HashSet visitedLinks; //hash with base urls as keys and visited urls as values
+	public static HashSet extractedEmails;
 	
 	public Probe(String inputOrigin){
 		//probe begins at origin url, stores an instance of webClient, 
 		origin = inputOrigin;
 		unvisitedLinks = new ArrayDeque();
 		visitedLinks = new HashSet<>();
+		extractedEmails = new HashSet<>();
 		
 		try {
 			webClient = new WebClient();
@@ -50,7 +52,7 @@ public class Probe implements Runnable {
 	public boolean extractFrom(String url){
 		try {
 			String response = webClient.getPage(url).getWebResponse().getContentAsString();
-			System.out.println("response: " + response);
+			pullContacts(response);
 			if (response.length() > 0){
 				return true;
 			} else {
@@ -73,12 +75,37 @@ public class Probe implements Runnable {
 			long sleep = (long) (Math.random() * 4000); //simulate network latency
 			Thread.sleep(sleep);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.println("Thread " + Thread.currentThread().getId() + " probe run: " + origin);
 		
 		mLatch.countDown();
 	}
+	
+	
+	private static void pullContacts(String source) {
+		// create a hashset from .purify function of page
+		HashSet<String> tempSetEmail = RegexUtils.findEmails(source);
+		
+		if (tempSetEmail.size() > 0) {
+			for (String emailItem : tempSetEmail) {
+				// for each email collected on this page
+				if (!extractedEmails.contains(emailItem)) {
+					try {
+						if (emailItem != null) {
+//							printWriter.print(emailItem);
+						}
+
+//						printWriter.println(""); // just to get to the next line
+//						bufferedWriter.flush();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+
+		}
+	}
+		
 
 }

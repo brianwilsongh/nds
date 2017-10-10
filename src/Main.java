@@ -1,9 +1,9 @@
 import java.util.LinkedList;
+import java.util.concurrent.CountDownLatch;
 import java.util.ArrayList;
 
 public class Main {
 	volatile static LinkedList origins; //links to websites to iterate over
-	static ArrayList<SpiderThread> spiderThreads = new ArrayList<>();
 	
 	static int coreCount; //num of cores availabe
     
@@ -11,13 +11,15 @@ public class Main {
 	    // turn off htmlunit warnings
 		configure();
 		
+		
 		Spider spider = new Spider();
-
-		System.out.println("Reached the end of Main.class");
+		
+		System.out.println("-- JAR TERMINATED --");
 		
 		//call start on all threads then join to pause until they finish
 		
 	}
+	
 	
 	public static synchronized String getOrigin(){
 		String origin = (String) origins.removeFirst();
@@ -33,3 +35,4 @@ public class Main {
 	}
 
 }
+

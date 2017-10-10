@@ -18,6 +18,9 @@ public class RegexUtils {
 
 			if (token != null && token != "") {
 
+				if (token.contains("mailto:")){
+					System.out.println("mailto email found - " + token);
+				}
 				//compile email regex
 				Pattern pattern = Pattern.compile(
 						"[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,8}(\\.[A-Z]{2,8})?", 
