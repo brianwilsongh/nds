@@ -28,11 +28,11 @@ public class RegexUtils {
 						);
 				Matcher matcher = pattern.matcher(token);
 				if (matcher.find()) {
-
 					token = matcher.group();
-					emailsDiscovered.add(token.toLowerCase());
-					System.out.println("RegexUtils discovered email: " + token);
-
+					if (!unwantedUrlDestination(token)){
+						emailsDiscovered.add(token.toLowerCase());
+						System.out.println("RegexUtils discovered email: " + token);
+					}
 				}
 			}
 		}

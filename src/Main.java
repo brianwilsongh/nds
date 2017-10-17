@@ -1,23 +1,24 @@
 import java.util.LinkedList;
 import java.util.concurrent.CountDownLatch;
+import java.io.PrintStream;
 import java.util.ArrayList;
 
 public class Main {
 	volatile static LinkedList origins; //links to websites to iterate over
 	
-	static int coreCount; //num of cores availabe
+	static int maxThreads;
+	static PrintStream printStream = System.out; //will refactor to be socket printstream
     
 	public static void main(String[] args){
-	    // turn off htmlunit warnings
 		configure();
 		
+		System.out.println("Free memory: " + Runtime.getRuntime().freeMemory());
+		System.out.println("Max thread est. : " + maxThreads);
 		
-		Spider spider = new Spider();
+		Spider spider = new Spider(); //creation auto-runs
 		
 		System.out.println("-- JAR TERMINATED --");
-		
-		//call start on all threads then join to pause until they finish
-		
+
 	}
 	
 	
@@ -29,8 +30,8 @@ public class Main {
 	private static void configure(){
 	    java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(java.util.logging.Level.OFF);
 	    java.util.logging.Logger.getLogger("org.apache.http").setLevel(java.util.logging.Level.OFF);
-	    coreCount = Runtime.getRuntime().availableProcessors();
-//	    System.out.println(coreCount + " cores available");
+//	    coreCount = Runtime.getRuntime().availableProcessors();
+	    maxThreads = (int) Runtime.getRuntime().freeMemory() / 6291456; // threads based on 6mb reserved per thread
 	    origins = IOUtils.getLinks();
 	}
 

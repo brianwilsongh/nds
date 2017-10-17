@@ -46,10 +46,10 @@ public class Probe implements Runnable {
 		}
 		
 		System.out.println("Thread:" + Thread.currentThread().getId() + "Initiated probe for " + origin);
-		extractFrom(origin); //do initial pull
+		extractFrom(origin); //do initial pull to start building queue
 	}
 	
-	public boolean extractFrom(String url){
+	private boolean extractFrom(String url){
 		try {
 			String response = webClient.getPage(url).getWebResponse().getContentAsString();
 			pullContacts(response);
@@ -72,12 +72,12 @@ public class Probe implements Runnable {
 	public void run() {
 		//this method retrieves resposne of next link, terminate if no more links
 		try {
-			long sleep = (long) (Math.random() * 4000); //simulate network latency
+			long sleep = (long) (Math.random() * 4000); //simulate network latency for testing
 			Thread.sleep(sleep);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		System.out.println("Thread " + Thread.currentThread().getId() + " probe run: " + origin);
+		System.out.println("Thread " + Thread.currentThread().getId() + " probe runs: " + origin);
 		
 		mLatch.countDown();
 	}

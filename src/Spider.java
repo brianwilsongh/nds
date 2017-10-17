@@ -13,8 +13,6 @@ public class Spider {
 	
 	public static boolean exhausted = false; // switch to inform Main whether this Spider has been exhausted
 	
-	private static LinkedList<String> mOrigins;
-	
 	public Spider(){
 		probeRevolver = new ArrayList<>();
 		System.out.println("Thread:" + Thread.currentThread().getId() + "Created new spider");
@@ -26,8 +24,7 @@ public class Spider {
 		CountDownLatch probeLatch;
 		
 		int waitInterval = 5000;
-		byte threadsPerCore = 3;
-		int maxThreadLimit = Main.coreCount * threadsPerCore;
+		int maxThreadLimit = Main.maxThreads;
 		if (maxThreadLimit < 2){
 			maxThreadLimit = 2;
 		}
@@ -58,10 +55,9 @@ public class Spider {
 			
 			try {
 				probeLatch.await();
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-			
 			
 			try {
 				//ensure that enough time has passed between iterations
