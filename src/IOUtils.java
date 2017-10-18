@@ -1,5 +1,6 @@
 import java.util.HashMap;
 import java.io.File;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,8 +18,9 @@ public class IOUtils {
 		return links;
 	}
 	
-	public static synchronized void writeToOutput(File file, String s){
+	public static synchronized void writeLineToStream(String s){
 		//will be called from multiple threads to write to output file in main
+		Main.printStream.println(s);
 	}
 	
 

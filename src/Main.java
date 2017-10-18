@@ -13,9 +13,9 @@ public class Main {
 		configure();
 		
 		System.out.println("Free memory: " + Runtime.getRuntime().freeMemory());
-		System.out.println("Max thread est. : " + maxThreads);
+		System.out.println("Max thread cap : " + maxThreads);
 		
-		Spider spider = new Spider(); //creation auto-runs
+		Spider spider = new Spider(); //construction will auto-run
 		
 		System.out.println("-- JAR TERMINATED --");
 

@@ -15,17 +15,10 @@ public class RegexUtils {
 		String[] splitWordArray = input.split("\\s+");
 
 		for (String token : splitWordArray) {
-
 			if (token != null && token != "") {
-
-				if (token.contains("mailto:")){
-					System.out.println("mailto email found - " + token);
-				}
 				//compile email regex
-				Pattern pattern = Pattern.compile(
-						"[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,8}(\\.[A-Z]{2,8})?", 
-						Pattern.CASE_INSENSITIVE
-						);
+				Pattern pattern = Pattern.compile("[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,8}(\\.[A-Z]{2,8})?",
+						Pattern.CASE_INSENSITIVE);
 				Matcher matcher = pattern.matcher(token);
 				if (matcher.find()) {
 					token = matcher.group();
@@ -41,9 +34,7 @@ public class RegexUtils {
 	}
 
 	public static boolean urlDomainNameMatch(String urlA, String urlB) {
-		// check if the host names of two urls match, regardless of www in front
-		// of them or not
-		// this currently checks if the url pulled by Jsoup matches the base URL
+		// check if the host names of two urls match, ignore www part
 		// input by the user
 
 		// build a url to make string for A, then B
@@ -64,9 +55,8 @@ public class RegexUtils {
 		}
 
 		// now extract substring from strings, domain name, to take care of www
-		// or not www in URLs
 		String siteNameA = "";
-		// search for the pattern I want, like "google.com" in
+		// search for a pattern like "google.com" in
 		// http://www.google.com/maps using RegEx
 		Pattern patternA = Pattern.compile("([^\\.]+)\\.(co.)?([^\\.]+)$");
 		Matcher matcherA = patternA.matcher(hostA);

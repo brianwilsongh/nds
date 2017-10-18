@@ -15,7 +15,7 @@ public class Spider {
 	
 	public Spider(){
 		probeRevolver = new ArrayList<>();
-		System.out.println("Thread:" + Thread.currentThread().getId() + "Created new spider");
+		System.out.println("Thread:" + Thread.currentThread().getId() + " INIT " + this.toString());
 		initiate();
 	}
 	
@@ -42,15 +42,10 @@ public class Spider {
 			executor = Executors.newFixedThreadPool(probeRevolver.size());
 			
 			probeLatch = new CountDownLatch(probeRevolver.size());
-			for (byte idx = 0; idx < probeRevolver.size(); idx++){
-				Probe thisProbe = probeRevolver.get(idx);
+			
+			for (Probe thisProbe : probeRevolver){ //execute probes into pool
 				thisProbe.setLatch(probeLatch);
-				executor.execute(thisProbe);
-				
-				if (idx == probeRevolver.size() - 1){
-					probeRevolver.remove(idx);
-				}
-				
+				executor.execute(thisProbe);	
 			}
 			
 			try {
@@ -62,7 +57,6 @@ public class Spider {
 			try {
 				//ensure that enough time has passed between iterations
 				int timeNeededToMeetBaseline = (int) (waitInterval - (System.nanoTime() - startIteration)/1000000);
-				System.out.println(timeNeededToMeetBaseline);
 				if (timeNeededToMeetBaseline > 0){
 					Thread.sleep(timeNeededToMeetBaseline);
 				}
@@ -73,7 +67,11 @@ public class Spider {
 			System.out.println("Latch opened! Size of revolver: " + probeRevolver.size());
 			System.out.println("Size of origins LL: " + Main.origins.size());
 			
-			System.out.println("Time for 1 iteration: "  + (System.nanoTime() - startIteration)/1000000);
+			for (byte idx = 0; idx < probeRevolver.size(); idx++){ //kill terminated probes
+				if (probeRevolver.get(idx).terminate){
+					probeRevolver.remove(idx);
+				}	
+			}
 			
 			if (probeRevolver.size() < 1){
 				//probe array empty even after trying to find new origins to build new probes

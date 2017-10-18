@@ -1,6 +1,7 @@
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.concurrent.CountDownLatch;
 
 import com.gargoylesoftware.htmlunit.Page;
@@ -10,6 +11,7 @@ import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 public class Probe implements Runnable {
+	//probes are threads run by spider - keeps track of position within domain tree, 1 per domain
 	public WebClient webClient;
 	public String origin;
 	public static boolean terminate = false;
@@ -21,7 +23,7 @@ public class Probe implements Runnable {
 	public static HashSet extractedEmails;
 	
 	public Probe(String inputOrigin){
-		//probe begins at origin url, stores an instance of webClient, 
+		//probe begins at origin url, stores an instance of webClient, extracts initial
 		origin = inputOrigin;
 		unvisitedLinks = new ArrayDeque();
 		visitedLinks = new HashSet<>();
@@ -41,63 +43,67 @@ public class Probe implements Runnable {
 			options.setTimeout(7000);
 		} catch (Exception e){
 			terminate = true;
+			System.out.println("Probe for " + inputOrigin + " failed to initiate webClient!");
 			webClient.close();
 			e.printStackTrace();
 		}
 		
-		System.out.println("Thread:" + Thread.currentThread().getId() + "Initiated probe for " + origin);
+		IOUtils.writeLineToStream("Thread:" + Thread.currentThread().getId() + "Initiated probe for " + origin);
 		extractFrom(origin); //do initial pull to start building queue
 	}
 	
-	private boolean extractFrom(String url){
+	@Override
+	public void run() {
+		//this method retrieves response of next link, terminate if no more links
+		
+		try {
+			extractFrom((String) unvisitedLinks.remove());
+		} catch (NoSuchElementException e){
+			System.out.println("Set terminate=true for " + origin);
+			mLatch.countDown();
+			this.terminate = true;
+		}
+
+		IOUtils.writeLineToStream("Thread " + Thread.currentThread().getId() + " probe runs: " + origin);
+		mLatch.countDown();
+		
+		int randKill = (int) Math.ceil(Math.random() * 100); //TEST only, pretend probe ran out 1/20 chance
+			if (randKill > 90){
+				this.terminate = true;
+			}
+	}
+	
+	private void extractFrom(String url){
+		//gets http response, pulls contacts/links
+		if (url.length() == 0){
+			return;
+		}
 		try {
 			String response = webClient.getPage(url).getWebResponse().getContentAsString();
 			pullContacts(response);
+			//TODO: Pull Links, add methods and necessary network utils
 			if (response.length() > 0){
-				return true;
-			} else {
-				return false;
+				System.out.println(this.toString() + " received no response from " + url);
 			}
 		} catch (Exception e){
+			System.out.println("Failed fetch, probe " + this.toString() + ", thread " + Thread.currentThread().getId() + ", for url " + url);
 			e.getMessage();
-			return false;
 		}
 	}
 	
 	public static void setLatch(CountDownLatch newLatch){
 		mLatch = newLatch;
 	}
-
-	@Override
-	public void run() {
-		//this method retrieves resposne of next link, terminate if no more links
-		try {
-			long sleep = (long) (Math.random() * 4000); //simulate network latency for testing
-			Thread.sleep(sleep);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		System.out.println("Thread " + Thread.currentThread().getId() + " probe runs: " + origin);
-		
-		mLatch.countDown();
-	}
 	
 	
 	private static void pullContacts(String source) {
-		// create a hashset from .purify function of page
-		HashSet<String> tempSetEmail = RegexUtils.findEmails(source);
-		
-		if (tempSetEmail.size() > 0) {
-			for (String emailItem : tempSetEmail) {
-				// for each email collected on this page
+		HashSet<String> emailSet = RegexUtils.findEmails(source);
+		if (emailSet.size() > 0) {
+			for (String emailItem : emailSet) {
 				if (!extractedEmails.contains(emailItem)) {
 					try {
-						if (emailItem != null) {
-//							printWriter.print(emailItem);
-						}
-
-//						printWriter.println(""); // just to get to the next line
-//						bufferedWriter.flush();
+						IOUtils.writeLineToStream(emailItem + ",");
+						extractedEmails.add(emailItem);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -106,6 +112,10 @@ public class Probe implements Runnable {
 
 		}
 	}
+	
+	
+	
+	
 		
 
 }
