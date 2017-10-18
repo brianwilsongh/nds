@@ -20,7 +20,7 @@ public class IOUtils {
 	
 	public static synchronized void writeLineToStream(String s){
 		//will be called from multiple threads to write to output file in main
-		Main.printStream.println(s);
+		Main.printStream.println("OUTPUTSTREAM:: " + s);
 	}
 	
 

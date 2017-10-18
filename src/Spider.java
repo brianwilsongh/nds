@@ -1,5 +1,6 @@
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.ArrayDeque;
 import java.util.LinkedList;
@@ -67,10 +68,11 @@ public class Spider {
 			System.out.println("Latch opened! Size of revolver: " + probeRevolver.size());
 			System.out.println("Size of origins LL: " + Main.origins.size());
 			
-			for (byte idx = 0; idx < probeRevolver.size(); idx++){ //kill terminated probes
-				if (probeRevolver.get(idx).terminate){
-					probeRevolver.remove(idx);
-				}	
+			Iterator<Probe> iterator = probeRevolver.iterator();
+			while (iterator.hasNext()){
+				if (iterator.next().terminate){
+					iterator.remove();
+				}
 			}
 			
 			if (probeRevolver.size() < 1){

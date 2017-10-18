@@ -69,20 +69,22 @@ public class Probe implements Runnable {
 		
 		int randKill = (int) Math.ceil(Math.random() * 100); //TEST only, pretend probe ran out 1/20 chance
 			if (randKill > 90){
+				System.out.println("RandomTermination: " + origin);
 				this.terminate = true;
 			}
 	}
 	
 	private void extractFrom(String url){
 		//gets http response, pulls contacts/links
-		if (url.length() == 0){
+		System.out.println("url is " + url + "for probe with origin " + origin);
+		if (!(url.length() > 0)){
 			return;
 		}
 		try {
 			String response = webClient.getPage(url).getWebResponse().getContentAsString();
 			pullContacts(response);
 			//TODO: Pull Links, add methods and necessary network utils
-			if (response.length() > 0){
+			if (response.length() == 0){
 				System.out.println(this.toString() + " received no response from " + url);
 			}
 		} catch (Exception e){
