@@ -10,9 +10,9 @@ import java.util.concurrent.ExecutorService;
 
 public class Spider {
 	
-	public static ArrayList<Probe> probeRevolver;
+	public ArrayList<Probe> probeRevolver;
 	
-	public static boolean exhausted = false; // switch to inform Main whether this Spider has been exhausted
+	public boolean exhausted = false; // switch to inform Main whether this Spider has been exhausted
 	
 	public Spider(){
 		probeRevolver = new ArrayList<>();

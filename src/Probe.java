@@ -14,13 +14,13 @@ public class Probe implements Runnable {
 	//probes are threads run by spider - keeps track of position within domain tree, 1 per domain
 	public WebClient webClient;
 	public String origin;
-	public static boolean terminate = false;
+	public boolean terminate = false;
 	
-	public static CountDownLatch mLatch;
+	public CountDownLatch mLatch;
 	
-	public static ArrayDeque unvisitedLinks; //hash with base urls as keys and collected urls as values
-	public static HashSet visitedLinks; //hash with base urls as keys and visited urls as values
-	public static HashSet extractedEmails;
+	private ArrayDeque unvisitedLinks; //hash with base urls as keys and collected urls as values
+	private HashSet visitedLinks; //hash with base urls as keys and visited urls as values
+	private HashSet extractedEmails;
 	
 	public Probe(String inputOrigin){
 		//probe begins at origin url, stores an instance of webClient, extracts initial
@@ -48,7 +48,7 @@ public class Probe implements Runnable {
 			e.printStackTrace();
 		}
 		
-		IOUtils.writeLineToStream("Thread:" + Thread.currentThread().getId() + "Initiated probe for " + origin);
+		System.out.println("Thread: " + Thread.currentThread().getId() + "Initiated probe for " + origin);
 		extractFrom(origin); //do initial pull to start building queue
 	}
 	
@@ -74,6 +74,10 @@ public class Probe implements Runnable {
 			}
 	}
 	
+	public void setLatch(CountDownLatch newLatch){
+		mLatch = newLatch;
+	}
+	
 	private void extractFrom(String url){
 		//gets http response, pulls contacts/links
 		System.out.println("url is " + url + "for probe with origin " + origin);
@@ -93,12 +97,7 @@ public class Probe implements Runnable {
 		}
 	}
 	
-	public static void setLatch(CountDownLatch newLatch){
-		mLatch = newLatch;
-	}
-	
-	
-	private static void pullContacts(String source) {
+	private void pullContacts(String source) {
 		HashSet<String> emailSet = RegexUtils.findEmails(source);
 		if (emailSet.size() > 0) {
 			for (String emailItem : emailSet) {
