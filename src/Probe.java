@@ -1,7 +1,9 @@
 import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 import com.gargoylesoftware.htmlunit.Page;
@@ -18,14 +20,14 @@ public class Probe implements Runnable {
 	
 	public CountDownLatch mLatch;
 	
-	private ArrayDeque unvisitedLinks; //hash with base urls as keys and collected urls as values
-	private HashSet visitedLinks; //hash with base urls as keys and visited urls as values
-	private HashSet extractedEmails;
+	private Deque<String> unvisitedLinks; //hash with base urls as keys and collected urls as values
+	private Set<String> visitedLinks; //hash with base urls as keys and visited urls as values
+	private Set<String> extractedEmails;
 	
 	public Probe(String inputOrigin){
 		//probe begins at origin url, stores an instance of webClient, extracts initial
 		origin = inputOrigin;
-		unvisitedLinks = new ArrayDeque();
+		unvisitedLinks = new ArrayDeque<>();
 		visitedLinks = new HashSet<>();
 		extractedEmails = new HashSet<>();
 		

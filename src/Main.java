@@ -4,7 +4,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 
 public class Main {
-	volatile static LinkedList origins; //links to websites to iterate over
+	volatile static LinkedList<String> origins; //links to websites to iterate over
 	
 	static int maxThreads;
 	static PrintStream printStream = System.out; //will refactor to be socket printstream
@@ -15,7 +15,7 @@ public class Main {
 		System.out.println("Free memory: " + Runtime.getRuntime().freeMemory());
 		System.out.println("Max thread cap : " + maxThreads);
 		
-		Spider spider = new Spider(); //construction will auto-run
+		Spider spider = new Spider(); //construction will autorun
 		
 		System.out.println("-- JAR TERMINATED --");
 

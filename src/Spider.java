@@ -1,21 +1,18 @@
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.ArrayDeque;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
 public class Spider {
 	
-	public ArrayList<Probe> probeRevolver;
+	public List<Probe> probeRevolver;
 	
 	public boolean exhausted = false; // switch to inform Main whether this Spider has been exhausted
 	
 	public Spider(){
-		probeRevolver = new ArrayList<>();
+		probeRevolver = new LinkedList<>();
 		System.out.println("Thread:" + Thread.currentThread().getId() + " INIT " + this.toString());
 		initiate();
 	}

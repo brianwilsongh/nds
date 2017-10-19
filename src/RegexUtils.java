@@ -35,9 +35,7 @@ public class RegexUtils {
 
 	public static boolean urlDomainNameMatch(String urlA, String urlB) {
 		// check if the host names of two urls match, ignore www part
-		// input by the user
 
-		// build a url to make string for A, then B
 		String hostA = "";
 		try {
 			URL builtUrlA = new URL(urlA);
@@ -76,7 +74,7 @@ public class RegexUtils {
 	}
 
 	public static boolean unwantedUrlDestination(String url) {
-		if (url.matches(".+(.jpg|.jpeg|.png|.gif|.pdf|.stm|.aspx|#|.xml|.json|.vcf){1}$")
+		if (url.matches(".+(.jpg|.jpeg|.png|.gif|.pdf|.stm|.aspx|#|.xml|.json|.vcf|.js|.oxps|.mp4|.mp3|.csv|.docx|.doc|.zip){1}$")
 				|| url.matches("^(#|mailto:|tel:|redirect){1}.+") || url.contains("javascript")) {
 			return true;
 		}
