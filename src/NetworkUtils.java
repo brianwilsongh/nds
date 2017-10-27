@@ -38,9 +38,8 @@ public class NetworkUtils {
 		return theURL;
 	}
 
-	public static boolean urlHostPathMatch(URL urlA, URL urlB) {
+	public static boolean urlHostMatch(URL urlA, URL urlB) {
 		// check if the paths match of built URL objects
-//			System.out.println("Comparing: " + urlA.toString() + " " + urlB.toString());
 		try {
 			// build a url to make string for A, then B
 			String protocolA = urlA.getProtocol();
@@ -56,12 +55,9 @@ public class NetworkUtils {
 				hostB = hostB.substring(4, hostB.length());
 			}
 
-			String pathA = urlA.getPath();
-			String pathB = urlB.getPath();
+			String finalizedA = protocolA + hostA;
 
-			String rebuiltUrlA = protocolA + hostA + pathA;
-
-			if (rebuiltUrlA.equals(protocolB + hostB + pathB)) {
+			if (finalizedA.equals(protocolB + hostB)) {
 				return true;
 			} else {
 				return false;

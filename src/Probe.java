@@ -10,24 +10,10 @@ import java.util.concurrent.CountDownLatch;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebClientOptions;
-import com.gargoylesoftware.htmlunit.WebResponse;
-import com.gargoylesoftware.htmlunit.WebWindow;
-import com.gargoylesoftware.htmlunit.html.DomElement;
-import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.XHtmlPage;
-import com.gargoylesoftware.htmlunit.javascript.SimpleScriptable;
-import com.gargoylesoftware.htmlunit.javascript.host.Element;
-import com.gargoylesoftware.htmlunit.javascript.host.Window;
-import com.gargoylesoftware.htmlunit.javascript.host.css.ComputedCSSStyleDeclaration;
-import com.gargoylesoftware.htmlunit.javascript.host.html.HTMLElement;
-
-import net.sourceforge.htmlunit.corejs.javascript.ScriptableObject;
 
 public class Probe implements Runnable {
 	// probes are threads run by spider - keeps track of position within domain
@@ -39,30 +25,30 @@ public class Probe implements Runnable {
 
 	private CountDownLatch mLatch;
 
-	private Deque<String> linkQueue; // hash with base urls as keys and
-											// collected urls as values
-	private Set<String> discoveredLinks; // hash with base urls as keys and visited
-										// urls as values
+	private Deque<String> linkQueue;
+	private Set<String> discoveredLinks;
 	private Set<String> extractedEmails;
+	
+	String DEFAULT_USER_AGENT_STRING = "Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:24.0) Gecko/20100101 Firefox/24.0";
 	
 	private int ctr = 0;
 
 	public Probe(String inputOrigin) {
-		// probe begins at origin url, stores an instance of webClient, extracts
-		// initial
+		// start crawl @ origin, stores instance of webClient
+		linkQueue = new ArrayDeque<>(); // queue of urls
+		discoveredLinks = new HashSet<>(); // discovered urls in set
+		extractedEmails = new HashSet<>(); //discovered emails in set
+		
 		origin = inputOrigin;
 		if (origin.endsWith("/")) {
-			origin = origin.substring(0, origin.length() - 1); // kill trailing
-																// / if origin
-																// has one
-			// TODO: check if this is handled in a regex util
+			origin = origin.substring(0, origin.length() - 1);
 		}
-		linkQueue = new ArrayDeque<>();
-		discoveredLinks = new HashSet<>();
-		extractedEmails = new HashSet<>();
+		discoveredLinks.add(origin);
+
 
 		try {
 			webClient = new WebClient();
+			webClient.getBrowserVersion().setUserAgent(DEFAULT_USER_AGENT_STRING);
 			WebClientOptions options = webClient.getOptions();
 			options.setThrowExceptionOnFailingStatusCode(false);
 			options.setUseInsecureSSL(true);
@@ -118,7 +104,7 @@ public class Probe implements Runnable {
 
 	private void extractFrom(String url) {
 		// gets http response, pulls contacts/links
-		System.out.println(origin + " on visit number " + ctr++ + "discovered: " + discoveredLinks.size() + "in queue: " + linkQueue.size());
+		System.out.println(origin + " visit:" + ctr++ + " discovered:" + discoveredLinks.size() + " in queue:" + linkQueue.size());
 		System.out.println(this.toString() + " extracting from: " + url);
 		if (!(url.length() > 0)) {
 			return;
@@ -160,8 +146,8 @@ public class Probe implements Runnable {
 		for (HtmlAnchor anchor : anchors) {
 			// TODO: maybe add functionality to follow image within <a> tag
 			String path = anchor.getHrefAttribute();
-			if (anchor.asText().length() > 0 && path.length() > 0 && !RegexUtils.unwantedUrlDestination(path)) {
-				// link isn't invisible(honeypot from len), not a file
+			if (path.length() > 0 && !RegexUtils.unwantedUrlDestination(path)) {
+				//visible link with href that doesn't lead to file
 
 				Pattern absPattern = Pattern.compile("^https?.+", Pattern.CASE_INSENSITIVE);
 				Matcher absoluteMatcher = absPattern.matcher(path);
@@ -169,7 +155,7 @@ public class Probe implements Runnable {
 					URL pathObj;
 					try {
 						pathObj = new URL(path);
-						if (NetworkUtils.urlHostPathMatch(originObj, pathObj)) {
+						if (NetworkUtils.urlHostMatch(originObj, pathObj)) {
 							linkQueue.add(path);
 							discoveredLinks.add(path);
 							System.out.println("new abs link: " + path);

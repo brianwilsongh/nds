@@ -71,13 +71,12 @@ public class RegexUtils {
 	}
 
 	public static boolean unwantedUrlDestination(String url) {
-		if (url.matches(".+(.jpg|.jpeg|.png|.gif|.pdf|.stm|.aspx|#|.xml|.json|.vcf|.js|.oxps|.mp4|.mp3|.csv|.docx|.doc|.zip){1}$")
-				|| url.matches("^(#|mailto:|tel:|redirect){1}.+") || url.contains("javascript")) {
+		if (url.matches(".+(.jpg|.jpeg|.png|.gif|.pdf|.svg|.stm|.aspx|#|.xml|.json|.vcf|.js|.oxps|.mp4|.mp3|.csv|.docx|.doc|.zip){1}$")
+				|| url.matches("^(#|mailto:|tel:|redirect){1}.+")) {
 			return true;
 		}
 		return false;
 	}
-
-
+	
 
 }
