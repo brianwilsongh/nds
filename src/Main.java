@@ -1,7 +1,6 @@
 import java.util.LinkedList;
 import java.util.concurrent.CountDownLatch;
 import java.io.PrintStream;
-import java.util.ArrayList;
 
 public class Main {
 	volatile static LinkedList<String> origins; //links to websites to iterate over
@@ -12,10 +11,11 @@ public class Main {
 	public static void main(String[] args){
 		configure();
 		
-		System.out.println("Free memory: " + Runtime.getRuntime().freeMemory());
-		System.out.println("Max thread cap : " + maxThreads);
-		
-		Spider spider = new Spider(); //construction will autorun
+//		System.out.println("Free memory: " + Runtime.getRuntime().freeMemory());
+//		System.out.println("Max thread cap : " + maxThreads);
+
+		CountDownLatch spiderLatch = new CountDownLatch(1);
+		Spider spider = new Spider(spiderLatch); //construction will autorun
 		
 		System.out.println("-- JAR TERMINATED --");
 

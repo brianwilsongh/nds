@@ -11,10 +11,11 @@ public class Spider {
 	
 	public boolean exhausted = false; // switch to inform Main whether this Spider has been exhausted
 	
-	public Spider(){
+	public Spider(CountDownLatch spiderLatch){
 		probeRevolver = new LinkedList<>();
 		System.out.println("Thread:" + Thread.currentThread().getId() + " INIT " + this.toString());
 		initiate();
+		spiderLatch.countDown();
 	}
 	
 	public void initiate(){
@@ -30,7 +31,7 @@ public class Spider {
 		while (!exhausted){
 			long startIteration = System.nanoTime();
 
-			while (probeRevolver.size() < (maxThreadLimit) && Main.origins.size() > 0){
+			while (probeRevolver.size() < (maxThreadLimit) && Main.origins.size() > 0){ //TODO: determine if blocking is okay
 				probeRevolver.add(new Probe(Main.getOrigin()));
 				System.out.println("Thread:" + Thread.currentThread().getId() + " probes: " + probeRevolver.toString());
 			}

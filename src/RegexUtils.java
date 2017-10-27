@@ -8,12 +8,9 @@ import java.util.regex.Pattern;
 public class RegexUtils {
 	public static HashSet<String> findEmails(String input) {
 
-		// HashSet that will contain emails from input string
 		HashSet<String> emailsDiscovered = new HashSet<>();
-
 		// split input into array using delimiter of unlimited whitespace to
 		String[] splitWordArray = input.split("\\s+");
-
 		for (String token : splitWordArray) {
 			if (token != null && token != "") {
 				//compile email regex
@@ -24,7 +21,7 @@ public class RegexUtils {
 					token = matcher.group();
 					if (!unwantedUrlDestination(token)){
 						emailsDiscovered.add(token.toLowerCase());
-						System.out.println("RegexUtils discovered email: " + token);
+//						System.out.println("RegexUtils discovered email: " + token);
 					}
 				}
 			}
