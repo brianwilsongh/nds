@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutorService;
 public class Spider {
 	
 	public List<Probe> probeRevolver;
+	public int waitInterval = 4000;
 	
 	public boolean exhausted = false; // switch to inform Main whether this Spider has been exhausted
 	
@@ -22,7 +23,6 @@ public class Spider {
 		ExecutorService executor = null;
 		CountDownLatch probeLatch;
 		
-		int waitInterval = 5000;
 		int maxThreadLimit = Main.maxThreads;
 		if (maxThreadLimit < 2){
 			maxThreadLimit = 2;
@@ -32,7 +32,7 @@ public class Spider {
 			long startIteration = System.nanoTime();
 
 			while (probeRevolver.size() < (maxThreadLimit) && Main.origins.size() > 0){ //TODO: determine if blocking is okay
-				probeRevolver.add(new Probe(Main.getOrigin()));
+				probeRevolver.add(new Probe(Main.getOrigin(), this));
 				System.out.println("Thread:" + Thread.currentThread().getId() + " probes: " + probeRevolver.toString());
 			}
 			if (executor != null){

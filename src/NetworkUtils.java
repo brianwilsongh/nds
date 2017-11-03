@@ -64,6 +64,7 @@ public class NetworkUtils {
 			}
 
 		} catch (Exception e) {
+			System.out.println("NWU.urlHostMatch Error with " + urlA.toString() + " and " + urlB.toString());
 			e.printStackTrace();
 			return false;
 		}

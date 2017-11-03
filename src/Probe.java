@@ -31,9 +31,9 @@ public class Probe implements Runnable {
 	
 	String DEFAULT_USER_AGENT_STRING = "Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:24.0) Gecko/20100101 Firefox/24.0";
 	
-	private int ctr = 0;
+	private int ctr = 1;
 
-	public Probe(String inputOrigin) {
+	public Probe(String inputOrigin, Spider spider) {
 		// start crawl @ origin, stores instance of webClient
 		linkQueue = new ArrayDeque<>(); // queue of urls
 		discoveredLinks = new HashSet<>(); // discovered urls in set
@@ -58,8 +58,11 @@ public class Probe implements Runnable {
 			options.setDownloadImages(false);
 			options.setPopupBlockerEnabled(true);
 			options.setGeolocationEnabled(false);
-			options.setTimeout(7000);
+			options.setTimeout(9000);
 			originObj = new URL(origin);
+			System.out.println("Thread:" + Thread.currentThread().getId() + " Initiated probe for " + origin);
+			extractFrom(origin); // do initial pull to start building queue
+			options.setTimeout(spider.waitInterval);
 		} catch (Exception e) {
 			terminate = true;
 			System.out.println("Probe for " + inputOrigin + " failed to initiate webClient!");
@@ -67,8 +70,6 @@ public class Probe implements Runnable {
 			e.printStackTrace();
 		}
 
-		System.out.println("Thread:" + Thread.currentThread().getId() + " Initiated probe for " + origin);
-		extractFrom(origin); // do initial pull to start building queue
 	}
 
 	@Override
@@ -84,18 +85,7 @@ public class Probe implements Runnable {
 			this.terminate = true;
 		}
 
-		// IOUtils.writeLineToStream("Thread" + Thread.currentThread().getId() +
-		// " probe runs: " + origin);
 		mLatch.countDown();
-
-		int randKill = (int) Math.ceil(Math.random() * 100); // TEST only,
-																// pretend probe
-																// ran out 1/20
-																// chance
-//		if (randKill > 90) {
-//			System.out.println("RandomTermination: " + origin);
-//			this.terminate = true;
-//		}
 	}
 
 	public void setLatch(CountDownLatch newLatch) {
@@ -106,6 +96,7 @@ public class Probe implements Runnable {
 		// gets http response, pulls contacts/links
 		System.out.println(origin + " visit:" + ctr++ + " discovered:" + discoveredLinks.size() + " in queue:" + linkQueue.size());
 		System.out.println(this.toString() + " extracting from: " + url);
+		System.out.println("contacts: " + extractedEmails.size());
 		if (!(url.length() > 0)) {
 			return;
 		}
@@ -151,14 +142,13 @@ public class Probe implements Runnable {
 
 				Pattern absPattern = Pattern.compile("^https?.+", Pattern.CASE_INSENSITIVE);
 				Matcher absoluteMatcher = absPattern.matcher(path);
-				if (absoluteMatcher.find() && !discoveredLinks.contains(path)) { // abs url
+				if (absoluteMatcher.find() && !discoveredLinks.contains(path)) { // is abs url
 					URL pathObj;
 					try {
 						pathObj = new URL(path);
 						if (NetworkUtils.urlHostMatch(originObj, pathObj)) {
 							linkQueue.add(path);
 							discoveredLinks.add(path);
-							System.out.println("new abs link: " + path);
 						}
 					} catch (MalformedURLException e) {
 						e.printStackTrace();
@@ -175,7 +165,6 @@ public class Probe implements Runnable {
 						builtPath = origin + "/" + path;
 					}
 					if (!discoveredLinks.contains(builtPath) && builtPath.length() > 0) {
-						System.out.println("new rel link: " + builtPath);
 						linkQueue.add(builtPath);
 						discoveredLinks.add(builtPath);
 					}
