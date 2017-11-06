@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.LinkedList;
@@ -16,6 +17,12 @@ public class IOUtils {
 	
 	public static synchronized void writeLineToStream(String s){
 		//will be called from multiple threads to write to output file in main
+		Main.printWriter.println(s);
+		try {
+			Main.bufferedWriter.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		Main.printStream.println("OUTPUTSTREAM:: " + s);
 	}
 	

@@ -1,12 +1,29 @@
 import java.util.LinkedList;
 import java.util.concurrent.CountDownLatch;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 
 public class Main {
 	volatile static LinkedList<String> origins; //links to websites to iterate over
 	
 	static int maxThreads;
 	static PrintStream printStream = System.out; //will refactor to be socket printstream
+	
+
+	static PrintWriter printWriter;
+	static BufferedWriter bufferedWriter;
+	static {
+		try {
+			bufferedWriter = new BufferedWriter(new FileWriter("output.csv"));
+			printWriter = new PrintWriter(bufferedWriter);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} //TODO: move to stream when prepared for server
+	}
+
     
 	public static void main(String[] args){
 		configure();
