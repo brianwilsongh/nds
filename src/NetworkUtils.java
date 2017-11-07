@@ -6,15 +6,23 @@ import com.gargoylesoftware.htmlunit.html.XHtmlPage;
 
 public class NetworkUtils {
 
-	public static URL makeURL(String string, String origin) {
+
+	
+	public static URL makeAbsoluteUrl(String relative, String origin) {
+		//build an absolute url based on a relative one given the original destination of probe
 		URL returnURL = null;
+		
 		try {
-			// make the URL out of the string
-			returnURL = new URL(origin + string);
-		} catch (MalformedURLException e) {
+			URL originUrl = new URL(origin);
+			if (!relative.startsWith("/")){
+				returnURL = new URL(originUrl.getProtocol() + "://" + originUrl.getHost() + "/" + relative);
+			} else {
+				returnURL = new URL(originUrl.getProtocol() + "://" + originUrl.getHost() + relative);
+			}
+		} catch (Exception e){
 			e.printStackTrace();
-			System.out.println("NUtils.makeURL failed to make url from: " + string + " added onto origin: " + origin);
 		}
+
 		return returnURL;
 	}
 
@@ -70,10 +78,5 @@ public class NetworkUtils {
 		}
 	}
 	
-	public static String getOrigin(String urlA) {
-		// eg 'http://www.example.com'
-		URL theBuiltUrl = makeURL(urlA, null);
-		return theBuiltUrl.getProtocol() + theBuiltUrl.getHost();
-	}
 	
 }

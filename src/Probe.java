@@ -154,15 +154,17 @@ public class Probe implements Runnable {
 						e.printStackTrace();
 					}
 				} else if (!discoveredLinks.contains(path)) { // rel url
-					Pattern subdirPattern = Pattern.compile("^\\/(?!\\/).+", Pattern.CASE_INSENSITIVE);
+					Pattern subdirPattern = Pattern.compile("[a-zA-Z0-9/\\-_\\.&'%]+", Pattern.CASE_INSENSITIVE); //original regex ^\\/(?!\\/).+
 					Matcher subdirMatch = subdirPattern.matcher(path);
-					Pattern rootPattern = Pattern.compile("^[a-z0-9_]\\.html", Pattern.CASE_INSENSITIVE);
+					Pattern rootPattern = Pattern.compile("^[a-z0-9_=\\?^/]\\.html", Pattern.CASE_INSENSITIVE); //from top level dir
 					Matcher rootMatch = rootPattern.matcher(path);
 					String builtPath = "";
 					if (subdirMatch.find()) {
-						builtPath = NetworkUtils.makeURL(path, origin).toString();
+						builtPath = NetworkUtils.makeAbsoluteUrl(path, origin).toString();
 					} else if (rootMatch.find()) {
 						builtPath = origin + "/" + path;
+					} else {
+						System.out.println("badpath: " + path.toString() + " where origin was " + origin);
 					}
 					if (!discoveredLinks.contains(builtPath) && builtPath.length() > 0) {
 						linkQueue.add(builtPath);
