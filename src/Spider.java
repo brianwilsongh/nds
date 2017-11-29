@@ -24,8 +24,8 @@ public class Spider {
 		CountDownLatch probeLatch;
 		
 		int maxThreadLimit = Main.maxThreads;
-		if (maxThreadLimit < 2){
-			maxThreadLimit = 2;
+		if (maxThreadLimit < 7){
+			maxThreadLimit = 7;
 		}
 		
 		while (!exhausted){
