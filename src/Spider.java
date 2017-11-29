@@ -63,8 +63,8 @@ public class Spider {
 				e.printStackTrace();
 			}
 			
-			System.out.println("Latch opened! Size of revolver: " + probeRevolver.size());
-			System.out.println("Size of origins LL: " + Main.origins.size());
+//			System.out.println("Latch opened! Size of revolver: " + probeRevolver.size());
+//			System.out.println("Size of origins LL: " + Main.origins.size());
 			
 			Iterator<Probe> iterator = probeRevolver.iterator();
 			while (iterator.hasNext()){

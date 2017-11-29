@@ -94,9 +94,9 @@ public class Probe implements Runnable {
 
 	private void extractFrom(String url) {
 		// gets http response, pulls contacts/links
-		System.out.println(origin + " visit:" + ctr++ + " discovered:" + discoveredLinks.size() + " in queue:" + linkQueue.size());
+		System.out.println(origin + " pages visited:" + ctr++ + " discovered:" + discoveredLinks.size() + " in queue:" + linkQueue.size());
 		System.out.println(this.toString() + " extracting from: " + url);
-		System.out.println("contacts: " + extractedEmails.size());
+		System.out.println("contacts discovered on " + origin + ": " + extractedEmails.size());
 		if (!(url.length() > 0)) {
 			return;
 		}

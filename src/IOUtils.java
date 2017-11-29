@@ -23,7 +23,7 @@ public class IOUtils {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		Main.printStream.println("OUTPUTSTREAM:: " + s);
+		Main.printStream.println("New Contact:: " + s);
 	}
 	
 
