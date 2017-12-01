@@ -23,23 +23,15 @@ public class Spider {
 		ExecutorService executor = null;
 		CountDownLatch probeLatch;
 		
-		int maxThreadLimit = Main.maxThreads;
-		if (maxThreadLimit < 7){
-			maxThreadLimit = 7;
-		}
-		
 		while (!exhausted){
 			long startIteration = System.nanoTime();
 
-			while (probeRevolver.size() < (maxThreadLimit) && Main.origins.size() > 0){ //TODO: determine if blocking is okay
+			while (probeRevolver.size() < (Main.maxThreads) && Main.origins.size() > 0){ //TODO: determine if blocking is okay
 				probeRevolver.add(new Probe(Main.getOrigin(), this));
 				System.out.println("Thread:" + Thread.currentThread().getId() + " probes: " + probeRevolver.toString());
 			}
-			if (executor != null){
-				executor.shutdown();
-			}
+			if (executor != null) executor.shutdown();
 			executor = Executors.newFixedThreadPool(probeRevolver.size());
-			
 			probeLatch = new CountDownLatch(probeRevolver.size());
 			
 			for (Probe thisProbe : probeRevolver){ //execute probes into pool
@@ -56,10 +48,8 @@ public class Spider {
 			try {
 				//ensure that enough time has passed between iterations
 				int timeNeededToMeetBaseline = (int) (waitInterval - (System.nanoTime() - startIteration)/1000000);
-				if (timeNeededToMeetBaseline > 0){
-					Thread.sleep(timeNeededToMeetBaseline);
-				}
-			} catch (InterruptedException e){
+				if (timeNeededToMeetBaseline > 0) Thread.sleep(timeNeededToMeetBaseline);
+			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 			
@@ -68,19 +58,10 @@ public class Spider {
 			
 			Iterator<Probe> iterator = probeRevolver.iterator();
 			while (iterator.hasNext()){
-				if (iterator.next().terminate){
-					iterator.remove();
-				}
+				if (iterator.next().terminate) iterator.remove();
 			}
-			
-			if (probeRevolver.size() < 1){
-				//probe array empty even after trying to find new origins to build new probes
-				exhausted = true; //spider is done
-			}
-			
-			
+			if (probeRevolver.size() < 1) exhausted = true; //spider is done
 		}
-		
 		executor.shutdown();
 	}
 

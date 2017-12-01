@@ -6,8 +6,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegexUtils {
+	
+	static Pattern absPattern = Pattern.compile("^https?.+", Pattern.CASE_INSENSITIVE);
+	static Pattern subdirPattern = Pattern.compile("[a-zA-Z0-9/\\-_\\.&'%]+", Pattern.CASE_INSENSITIVE);
+	static Pattern rootPattern = Pattern.compile("^[a-z0-9_=\\?^/]\\.html", Pattern.CASE_INSENSITIVE);
+	
 	public static HashSet<String> findEmails(String input) {
-
 		HashSet<String> emailsDiscovered = new HashSet<>();
 		// split input into array using delimiter of unlimited whitespace to
 		String[] splitWordArray = input.split("\\s+");
