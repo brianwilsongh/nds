@@ -123,7 +123,9 @@ public class Probe implements Runnable {
 			if (path.length() > 0 && !RegexUtils.unwantedUrlDestination(path)) {
 				// visible link with href that doesn't lead to file
 				Matcher absoluteMatcher = RegexUtils.absPattern.matcher(path);
-				if (absoluteMatcher.find() && !discoveredLinks.contains(path)) { //is abs url
+				if (absoluteMatcher.find() && !discoveredLinks.contains(path)) { // is
+																					// abs
+																					// url
 					URL pathObj;
 					try {
 						pathObj = new URL(path);
@@ -135,17 +137,18 @@ public class Probe implements Runnable {
 						e.printStackTrace();
 					}
 				} else if (!discoveredLinks.contains(path)) { // rel url
-					 
-					Matcher subdirMatch = RegexUtils.subdirPattern.matcher(path); 
+
+					Matcher subdirMatch = RegexUtils.subdirPattern.matcher(path);
 					Matcher rootMatch = RegexUtils.rootPattern.matcher(path);
 					String builtPath = "";
-					
+
 					if (subdirMatch.find()) {
 						builtPath = NetworkUtils.makeAbsoluteUrl(path, origin).toString();
 					} else if (rootMatch.find()) {
 						builtPath = origin + "/" + path;
 					} else {
-//						System.out.println("badpath: " + path.toString() + " where origin was " + origin);
+						// System.out.println("badpath: " + path.toString() + "
+						// where origin was " + origin);
 					}
 					if (!discoveredLinks.contains(builtPath) && builtPath.length() > 0) {
 						linkQueue.add(builtPath);

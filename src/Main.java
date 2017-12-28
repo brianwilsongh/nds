@@ -28,9 +28,6 @@ public class Main {
 	public static void main(String[] args){
 		configure();
 		
-//		System.out.println("Free memory: " + Runtime.getRuntime().freeMemory());
-//		System.out.println("Max thread cap : " + maxThreads);
-
 		CountDownLatch spiderLatch = new CountDownLatch(1);
 		Spider spider = new Spider(spiderLatch); //construction will autorun
 		
@@ -49,6 +46,7 @@ public class Main {
 	    java.util.logging.Logger.getLogger("org.apache.http").setLevel(java.util.logging.Level.OFF);
 //	    coreCount = Runtime.getRuntime().availableProcessors();
 	    maxThreads = (int) Runtime.getRuntime().freeMemory() / 6291456; // threads based on 6mb reserved per thread
+	    if (maxThreads < 7) maxThreads = 7;
 	    origins = IOUtils.getLinks();
 	}
 
